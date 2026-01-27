@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "stephen-skills",
+  "description": "Stephen's collection of custom plugins and skills for Claude Code",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Stephen",
+    "email": "kingkongbboy@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "ai-meeting",
+      "description": "Multi-AI collaborative discussions with Claude, Gemini, and Codex for consensus-based decision making. Supports both Traditional Chinese and English.",
+      "version": "1.1.0",
+      "author": {
+        "name": "Stephen"
+      },
+      "source": "./plugins/ai-meeting",
+      "category": "productivity"
+    }
+  ]
+}

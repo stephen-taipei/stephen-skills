@@ -1,0 +1,10 @@
+{
+  "name": "ai-meeting",
+  "description": "Multi-AI collaborative discussions with Claude, Gemini, and Codex for consensus-based decision making. Supports both Traditional Chinese (繁體中文) and English.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Stephen Chuang"
+  },
+  "keywords": ["ai", "meeting", "collaboration", "gemini", "codex", "consensus", "multilingual", "chinese", "english"],
+  "license": "MIT"
+}
