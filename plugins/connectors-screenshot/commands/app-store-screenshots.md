@@ -65,6 +65,17 @@ mkdir -p /Users/stephen.chuang/Downloads/website/connectors/scripts/app-store-sc
 6. Scroll list if needed to find language
 7. Tap target language
 8. Wait for UI refresh (postDelay=2)
+9. Logout and re-login via 試用DEMO (required after each language switch)
+
+#### 3.2.1 Logout + Demo Login (Required After Each Language Switch)
+1. Stay in 個人中心 tab (x=396, y=905)
+2. Scroll down to the bottom (swipe up if needed)
+3. Use `describe_ui` to find 登出 / 退出登入 / Log out
+4. Tap logout and confirm if a dialog appears
+5. Wait for the login screen to appear
+6. Use `describe_ui` to find 試用DEMO / Try DEMO
+7. Tap 試用DEMO to re-login
+8. Wait 1-2 seconds for home screen to load
 
 #### 3.3 Capture 6 Screenshots
 
