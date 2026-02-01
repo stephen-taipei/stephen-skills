@@ -4,9 +4,10 @@ A collection of custom plugins and skills for [Claude Code](https://claude.ai/cl
 
 ## Available Plugins
 
-| Plugin                           | Description                                                                      | Version |
-| -------------------------------- | -------------------------------------------------------------------------------- | ------- |
-| [ai-meeting](plugins/ai-meeting) | Multi-AI collaborative discussions with Claude, Gemini, and Codex (繁中/English) | 1.1.0   |
+| Plugin                                                   | Description                                                                      | Version |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- | ------- |
+| [ai-meeting](plugins/ai-meeting)                         | Multi-AI collaborative discussions with Claude, Gemini, and Codex (繁中/English) | 1.1.0   |
+| [connectors-app-screenshot](plugins/connectors-screenshot) | 自動化多語系螢幕截圖                                                             | 0.1.0   |
 
 ## Installation
 

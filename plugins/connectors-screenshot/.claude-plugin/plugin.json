@@ -1,0 +1,10 @@
+{
+  "name": "connectors-app-screenshot",
+  "description": "自動化多語系螢幕截圖",
+  "version": "0.1.0",
+  "author": {
+    "name": "Stephen Chuang"
+  },
+  "keywords": ["connectors", "screenshot", "app-store", "automation", "multilingual"],
+  "license": "MIT"
+}
