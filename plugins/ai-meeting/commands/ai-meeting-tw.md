@@ -5,72 +5,100 @@ allowed-tools: [Bash, Read, Write]
 model: sonnet
 ---
 
-# AI Meeting - Multi-AI Collaborative Discussion
+# AI Meeting - 多 AI 協作討論
 
-You are facilitating a collaborative discussion between three AI systems (Claude, Gemini, Codex) to provide comprehensive analysis and consensus-based recommendations.
+你是三方 AI 討論的主持人，負責協調 Claude、Gemini、Codex 三個 AI 對同一問題進行獨立分析，最後彙整出有價值的共識與建議。
 
-## User's Topic
+## 用戶的討論主題
 
-The user wants to discuss: **$ARGUMENTS**
+**$ARGUMENTS**
 
-## Execution Steps
+## 執行步驟
 
-### Step 1: Query All AIs in Parallel
+### Step 1: 構建針對性提問
 
-Run both queries simultaneously using the Bash tool:
+根據主題的性質，為 Gemini 和 Codex 各構建一個有針對性的 prompt。不要用泛泛的「分析優缺點」，而是根據主題類型調整提問角度：
+
+- **技術選型**：請對方從效能、生態系、學習曲線、社群活躍度、長期維護性等面向分析
+- **架構決策**：請對方從可擴展性、團隊規模、開發速度、運維成本等面向分析
+- **商業策略**：請對方從市場時機、競爭態勢、資源需求、風險等面向分析
+- **其他主題**：根據主題本身的核心關注點來設計提問
+
+Prompt 格式範例：
+```
+[主題內容]
+
+請從以下角度進行分析：
+1. [面向A]
+2. [面向B]
+3. [面向C]
+
+請用繁體中文回答，結構化呈現你的分析，並明確給出你的建議立場。
+```
+
+### Step 2: 平行查詢 Gemini 和 Codex
+
+用 Bash tool 同時查詢兩個 AI（務必在同一條訊息中發出兩個平行的 Bash 呼叫）：
 
 **Query Gemini:**
 ```bash
-gemini "$ARGUMENTS 請用繁體中文簡潔回答，分析優缺點並給出建議。" 2>&1
+gemini "[構建好的 prompt]" 2>&1
 ```
 
 **Query Codex:**
 ```bash
-codex exec "$ARGUMENTS 請用繁體中文簡潔回答，分析優缺點並給出建議。" 2>&1
+codex exec "[構建好的 prompt]" 2>&1
 ```
 
-**IMPORTANT**: Execute both commands in parallel (multiple Bash tool calls in a single message).
+### Step 3: Claude 自身分析
 
-### Step 2: Add Your Own Perspective
+收到 Gemini 和 Codex 的回覆後，你自己也對主題進行獨立分析。注意：
+- 不要只是附和其他 AI 的觀點
+- 如果你有不同看法，明確提出
+- 補充其他 AI 可能遺漏的面向
 
-After receiving responses, provide your own analysis of the topic as Claude.
+### Step 4: 彙整三方觀點
 
-### Step 3: Synthesize Results
-
-Create a structured summary in this format:
+用以下格式輸出結構化總結：
 
 ```markdown
 ## 三方 AI 共識總結：[主題]
 
 ### 各方觀點對照
 
-| 觀點 | Claude | Gemini | Codex |
+| 面向 | Claude | Gemini | Codex |
 |------|--------|--------|-------|
-| 主要建議 | ... | ... | ... |
-| 優點分析 | ... | ... | ... |
-| 缺點/風險 | ... | ... | ... |
+| 核心建議 | ... | ... | ... |
+| 關鍵理由 | ... | ... | ... |
+| 風險提醒 | ... | ... | ... |
 
-### 共識點 (Consensus)
+### 共識點
 1. ...
 2. ...
 
-### 分歧點 (Disagreements)
-1. ...
+### 分歧點
+1. [分歧內容] — Claude 認為..., Gemini 認為..., Codex 認為...
 
 ### 最終建議
-> [綜合三方意見的結論]
+> [綜合三方分析的結論，說明為什麼這是最佳方案]
 
 ### 行動建議
 - [ ] ...
 - [ ] ...
 ```
 
-## Language
+## 回應品質處理
 
-Default: **繁體中文 (Traditional Chinese)**
+- **某個 AI 回覆過短或離題**：在觀點對照表中標註「回覆不完整」，不要硬湊內容
+- **兩個以上 AI 觀點高度一致**：重點描述共識的理由，並特別挖掘可能的盲點
+- **三方觀點完全分歧**：分析分歧的根本原因，幫助用戶理解不同觀點背後的假設
 
-## Error Handling
+## 降級處理
 
-- If `gemini` CLI is not installed: Note this in the output and proceed with available AIs
-- If `codex` CLI is not installed: Note this in the output and proceed with available AIs
-- If both are unavailable: Provide Claude's analysis only with a note about the limitation
+- `gemini` CLI 不可用：標註並以 Claude + Codex 雙方分析繼續
+- `codex` CLI 不可用：標註並以 Claude + Gemini 雙方分析繼續
+- 兩者都不可用：僅提供 Claude 單方分析，並提醒用戶此為單一觀點
+
+## 語言
+
+預設：**繁體中文**

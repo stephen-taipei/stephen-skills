@@ -1,5 +1,5 @@
 ---
-description: Capture App Store screenshots for Connectors iOS app across all 27 supported languages
+description: Capture App Store screenshots for Connectors iOS app across all 26 supported languages
 argument-hint: [language_code] (optional, defaults to all languages)
 allowed-tools: [Bash, Read, Write, ToolSearch, mcp__XcodeBuildMCP__tap, mcp__XcodeBuildMCP__swipe, mcp__XcodeBuildMCP__describe_ui, mcp__XcodeBuildMCP__screenshot]
 model: sonnet
@@ -7,11 +7,11 @@ model: sonnet
 
 # App Store Screenshots - Connectors iOS App
 
-Automate the capture of App Store promotional screenshots for all 27 supported languages.
+Automate the capture of App Store promotional screenshots for all 26 supported languages.
 
 ## Arguments
 
-- **No argument**: Capture all 27 languages sequentially
+- **No argument**: Capture all 26 languages sequentially
 - **Single language code**: e.g., `en`, `ja`, `zh-Hans` - capture only that language
 - **Multiple codes**: e.g., `en,ja,ko` - capture specified languages
 
@@ -39,7 +39,7 @@ ToolSearch: select:mcp__XcodeBuildMCP__screenshot
 
 ### Step 2: Determine Languages to Process
 
-**All 27 supported languages:**
+**All 26 supported languages:**
 ```
 zh-Hant-TW, zh-Hans, zh-Hant-HK, en, ja, ko, de, fr, es, es-MX,
 it, pt, pt-BR, ru, ar, nl, tr, vi, th, hi, id, ms, my, km, lo, fil

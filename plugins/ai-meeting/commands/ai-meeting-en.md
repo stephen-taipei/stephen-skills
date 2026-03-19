@@ -7,37 +7,59 @@ model: sonnet
 
 # AI Meeting - Multi-AI Collaborative Discussion
 
-You are facilitating a collaborative discussion between three AI systems (Claude, Gemini, Codex) to provide comprehensive analysis and consensus-based recommendations.
+You are the moderator of a three-way AI discussion, coordinating Claude, Gemini, and Codex to independently analyze the same question, then synthesizing their insights into actionable recommendations.
 
 ## User's Topic
 
-The user wants to discuss: **$ARGUMENTS**
+**$ARGUMENTS**
 
 ## Execution Steps
 
-### Step 1: Query All AIs in Parallel
+### Step 1: Craft Targeted Prompts
 
-Run both queries simultaneously using the Bash tool:
+Build a focused prompt for Gemini and Codex based on the topic's nature. Avoid generic "analyze pros and cons" — tailor the analysis angles to what matters:
+
+- **Tech stack selection**: Ask about performance, ecosystem maturity, learning curve, community activity, long-term maintainability
+- **Architecture decisions**: Ask about scalability, team size fit, development velocity, operational cost
+- **Business strategy**: Ask about market timing, competitive landscape, resource requirements, risk factors
+- **Other topics**: Identify the core concerns and design the prompt around them
+
+Prompt format example:
+```
+[Topic content]
+
+Please analyze from these angles:
+1. [Angle A]
+2. [Angle B]
+3. [Angle C]
+
+Structure your analysis clearly and state your recommended position explicitly.
+```
+
+### Step 2: Query Gemini and Codex in Parallel
+
+Use Bash tool to query both AIs simultaneously (must send two parallel Bash calls in a single message):
 
 **Query Gemini:**
 ```bash
-gemini "$ARGUMENTS Please provide a concise analysis with pros and cons, and give your recommendation." 2>&1
+gemini "[crafted prompt]" 2>&1
 ```
 
 **Query Codex:**
 ```bash
-codex exec "$ARGUMENTS Please provide a concise analysis with pros and cons, and give your recommendation." 2>&1
+codex exec "[crafted prompt]" 2>&1
 ```
 
-**IMPORTANT**: Execute both commands in parallel (multiple Bash tool calls in a single message).
+### Step 3: Claude's Own Analysis
 
-### Step 2: Add Your Own Perspective
+After receiving Gemini and Codex responses, provide your own independent analysis. Key points:
+- Don't just echo what other AIs said
+- If you disagree, state it clearly
+- Cover angles the others may have missed
 
-After receiving responses, provide your own analysis of the topic as Claude.
+### Step 4: Synthesize All Perspectives
 
-### Step 3: Synthesize Results
-
-Create a structured summary in this format:
+Output a structured summary:
 
 ```markdown
 ## AI Consensus Summary: [Topic]
@@ -46,31 +68,37 @@ Create a structured summary in this format:
 
 | Aspect | Claude | Gemini | Codex |
 |--------|--------|--------|-------|
-| Main Recommendation | ... | ... | ... |
-| Pros Analysis | ... | ... | ... |
-| Cons/Risks | ... | ... | ... |
+| Core recommendation | ... | ... | ... |
+| Key reasoning | ... | ... | ... |
+| Risk flags | ... | ... | ... |
 
 ### Consensus Points
 1. ...
 2. ...
 
 ### Points of Disagreement
-1. ...
+1. [Disagreement] — Claude argues..., Gemini argues..., Codex argues...
 
 ### Final Recommendation
-> [Synthesized conclusion from all three perspectives]
+> [Synthesized conclusion explaining why this is the best path forward]
 
 ### Action Items
 - [ ] ...
 - [ ] ...
 ```
 
+## Response Quality Handling
+
+- **An AI gives a thin or off-topic response**: Note "incomplete response" in the comparison table — don't fabricate content
+- **Two or more AIs strongly agree**: Focus on the shared reasoning and actively probe for blind spots
+- **All three disagree**: Analyze the root cause of divergence and surface the different assumptions behind each viewpoint
+
+## Graceful Degradation
+
+- `gemini` CLI unavailable: Note it and continue with Claude + Codex
+- `codex` CLI unavailable: Note it and continue with Claude + Gemini
+- Both unavailable: Provide Claude-only analysis with a caveat about single-perspective limitation
+
 ## Language
 
 Default: **English**
-
-## Error Handling
-
-- If `gemini` CLI is not installed: Note this in the output and proceed with available AIs
-- If `codex` CLI is not installed: Note this in the output and proceed with available AIs
-- If both are unavailable: Provide Claude's analysis only with a note about the limitation
