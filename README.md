@@ -130,23 +130,38 @@ For full multi-AI functionality:
 
 The plugin works with Claude alone if these are not installed.
 
+## Configuration Snapshots (not installable — reference only)
+
+Archives of self-authored Claude Code configuration captured from live environments. Use these as copy-and-adapt patterns, not as installable plugins.
+
+| Snapshot | Source | Contents |
+|----------|--------|----------|
+| [`project-snapshots/connectors/`](project-snapshots/connectors) | connectors monorepo `.claude/` | 4 hooks (incl. iOS TestFlight API schema freeze lock), 5 project-specific skills, 1 command, `settings.json` |
+| [`global-snapshots/`](global-snapshots) | `~/.claude/` | 1 hook (SwiftUI LazyHStack misuse detector), 4 self-authored skills (`asc-metadata-updater`, `git-check-pr`, `git-check-issues`, `team`) |
+
+Each snapshot has its own README explaining what the items do and how to reuse the pattern.
+
 ## Directory Structure
 
 ```
 stephen-skills/
 ├── README.md                           # This file
-└── plugins/
-    └── ai-meeting/
-        ├── .claude-plugin/
-        │   └── plugin.json             # Plugin metadata
-        ├── commands/
-        │   ├── ai-meeting-tw.md        # /ai-meeting-tw 繁體中文指令
-        │   └── ai-meeting-en.md        # /ai-meeting-en English command
-        └── skills/
-            ├── ai-meeting-tw/
-            │   └── SKILL.md            # 繁體中文自然語言觸發
-            └── ai-meeting-en/
-                └── SKILL.md            # English natural language trigger
+├── .claude-plugin/
+│   └── marketplace.json                # Plugin marketplace metadata
+├── plugins/                            # Installable plugins
+│   ├── ai-meeting/
+│   └── connectors-screenshot/
+├── project-snapshots/                  # Project-specific Claude config archives (reference)
+│   └── connectors/
+│       ├── README.md
+│       ├── settings.json
+│       ├── hooks/                      # 4 shell hooks
+│       ├── commands/                   # update-asc slash command
+│       └── skills/                     # 5 connectors-specific skills
+└── global-snapshots/                   # Self-authored ~/.claude/ items (reference)
+    ├── README.md
+    ├── hooks/                          # LazyHStack misuse detector
+    └── skills/                         # asc-metadata-updater, git-check-pr, git-check-issues, team
 ```
 
 ## Creating Your Own Plugin
