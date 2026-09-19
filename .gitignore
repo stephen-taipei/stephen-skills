@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+target/
+pkg/
+
+.DS_Store
+*.log
+npm-debug.log*
+
+# 掃描 / 量測 / 報告的本機產出
+.review-rust-wasm/
+*.local.json

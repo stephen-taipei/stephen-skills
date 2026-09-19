@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "0.1",
+  "name": "review-rust-wasm",
+  "nameForDisplay": "Review Rust/WASM",
+  "version": "0.1.0",
+  "description": "Audit a JS/TS frontend for CPU-bound hot paths worth porting to Rust + WebAssembly, port the ones you pick, run them in a Web Worker so the main thread stays responsive, benchmark before/after, and produce a PDF acceptance report."
+}

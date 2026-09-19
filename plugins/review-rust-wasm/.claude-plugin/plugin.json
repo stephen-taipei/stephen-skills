@@ -1,0 +1,20 @@
+{
+  "name": "review-rust-wasm",
+  "description": "Audit a JS/TS frontend for CPU-bound hot paths worth porting to Rust + WebAssembly, port the ones you pick, run them in a Web Worker so the main thread stays responsive, benchmark before/after, and produce a PDF acceptance report.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Stephen Chuang"
+  },
+  "homepage": "https://github.com/stephen-taipei/stephen-skills",
+  "keywords": [
+    "rust",
+    "wasm",
+    "webassembly",
+    "performance",
+    "web-worker",
+    "optimization",
+    "benchmark",
+    "profiling"
+  ],
+  "license": "MIT"
+}

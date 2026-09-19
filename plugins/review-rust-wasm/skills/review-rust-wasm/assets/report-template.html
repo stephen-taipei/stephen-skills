@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rust/WASM Review Report</title>
+<style>
+  :root {
+    --ink:        #15181d;
+    --ink-soft:   #4a525e;
+    --ink-faint:  #858e9c;
+    --rule:       #dfe3e9;
+    --rule-soft:  #eef1f5;
+    --accent:     #b4541f;
+    --good:       #1f6f43;
+    --warn:       #8a5a00;
+    --warn-bg:    #fdf6e3;
+    --warn-rule:  #e8d9a8;
+    --surface:    #f7f8fa;
+  }
+
+  @page { size: A4; margin: 16mm 14mm 18mm; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang TC", "PingFang SC", "Hiragino Sans",
+                 "Noto Sans CJK TC", "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, .mono {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+  }
+
+  /* ── 封面區 ───────────────────────────────────────────── */
+  .cover { border-bottom: 2.5px solid var(--ink); padding-bottom: 14px; margin-bottom: 26px; }
+  .cover .eyebrow {
+    font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 650; margin-bottom: 8px;
+  }
+  .cover h1 { font-size: 21pt; line-height: 1.25; margin: 0 0 12px; font-weight: 680; letter-spacing: -.01em; }
+  .cover .meta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 9pt; color: var(--ink-faint); }
+  .cover .meta b { color: var(--ink-soft); font-weight: 550; }
+
+  /* ── 區塊 ─────────────────────────────────────────────── */
+  h2 {
+    font-size: 13pt; font-weight: 660; margin: 30px 0 12px;
+    padding-bottom: 5px; border-bottom: 1px solid var(--rule);
+    break-after: avoid;
+  }
+  h3 { font-size: 11pt; font-weight: 640; margin: 0 0 4px; break-after: avoid; }
+  p  { margin: 0 0 9px; }
+
+  .lede { color: var(--ink-soft); margin-bottom: 4px; }
+
+  /* ── 表格 ─────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 9.5pt; }
+  th {
+    text-align: left; font-weight: 620; font-size: 8.5pt;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint);
+    border-bottom: 1.5px solid var(--rule); padding: 0 10px 6px 0; vertical-align: bottom;
+  }
+  td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  tr { break-inside: avoid; }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ── 項目卡 ───────────────────────────────────────────── */
+  /* 長項目允許跨頁，否則整塊被推到下一頁會留下大片空白；
+     改以「標題必須跟著內容」與「單一欄位不切開」維持可讀性。 */
+  .item { margin: 0 0 22px; break-inside: auto; }
+  .item-head {
+    display: flex; align-items: baseline; gap: 9px; margin-bottom: 3px;
+    break-after: avoid;
+  }
+  .item-num {
+    flex: none; width: 21px; height: 21px; border-radius: 50%;
+    background: var(--ink); color: #fff; font-size: 8.5pt; font-weight: 650;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; top: 2px;
+  }
+  .item-loc { font-size: 8.5pt; color: var(--ink-faint); margin: 0 0 10px 30px; break-after: avoid; }
+
+  .field { margin: 0 0 9px 30px; break-inside: avoid; }
+  .field-label {
+    font-size: 8pt; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 620; margin-bottom: 2px;
+  }
+  .field-body { color: var(--ink-soft); }
+  .field-body :last-child { margin-bottom: 0; }
+
+  ul.checks { margin: 3px 0 0; padding-left: 17px; }
+  ul.checks li { margin-bottom: 4px; color: var(--ink-soft); }
+
+  pre {
+    background: var(--surface); border: 1px solid var(--rule-soft); border-left: 2.5px solid var(--ink-faint);
+    padding: 8px 11px; margin: 5px 0; border-radius: 3px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 8.5pt; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+    break-inside: avoid;
+  }
+
+  /* ── 標記 ─────────────────────────────────────────────── */
+  .tag {
+    display: inline-block; font-size: 7.5pt; font-weight: 640; letter-spacing: .05em;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap; vertical-align: middle;
+  }
+  .tag-measured  { background: #e7f2ec; color: var(--good); }
+  .tag-estimated { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-rule); }
+
+  .delta-good { color: var(--good); font-weight: 620; }
+  .delta-bad  { color: var(--accent); font-weight: 620; }
+
+  .callout {
+    background: var(--warn-bg); border: 1px solid var(--warn-rule); border-left: 3px solid var(--warn);
+    padding: 10px 13px; border-radius: 3px; margin: 14px 0; font-size: 9.5pt; color: var(--warn);
+    break-inside: avoid;
+  }
+  .callout b { font-weight: 660; }
+
+  .empty { color: var(--ink-faint); font-style: italic; }
+
+  footer {
+    margin-top: 34px; padding-top: 10px; border-top: 1px solid var(--rule);
+    font-size: 8pt; color: var(--ink-faint); display: flex; justify-content: space-between; gap: 16px;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// ── 內建標籤（可由 report.json 的 labels 覆寫任一項）─────────────────
+const BUILTIN = {
+  'zh-TW': {
+    eyebrow: 'Rust / WebAssembly 改造驗收報告', summary: '改造項目總覽', details: '逐項說明',
+    excluded: '已評估但排除', environment: '量測環境', what: '改了什麼', why: '為什麼改',
+    benefit: '效益', acceptance: '如何驗收', col_item: '項目', col_location: '位置',
+    col_before: '改造前', col_after: '改造後', col_blocking: '主執行緒阻塞', col_status: '效益依據',
+    col_reason: '排除原因', measured: '實測', estimated: '未驗證', unverified_warning:
+      '本報告含未實測項目。標示「未驗證」者為讀碼推估，尚未經 benchmark 證實，不可作為驗收依據。',
+    no_items: '無項目', generated: '產生時間', footer_note: 'review-rust-wasm',
+  },
+  'zh-CN': {
+    eyebrow: 'Rust / WebAssembly 改造验收报告', summary: '改造项目总览', details: '逐项说明',
+    excluded: '已评估但排除', environment: '测量环境', what: '改了什么', why: '为什么改',
+    benefit: '效益', acceptance: '如何验收', col_item: '项目', col_location: '位置',
+    col_before: '改造前', col_after: '改造后', col_blocking: '主线程阻塞', col_status: '效益依据',
+    col_reason: '排除原因', measured: '实测', estimated: '未验证', unverified_warning:
+      '本报告含未实测项目。标示「未验证」者为读码推估，尚未经 benchmark 证实，不可作为验收依据。',
+    no_items: '无项目', generated: '生成时间', footer_note: 'review-rust-wasm',
+  },
+  en: {
+    eyebrow: 'Rust / WebAssembly Migration Report', summary: 'Summary', details: 'Details',
+    excluded: 'Evaluated but excluded', environment: 'Measurement environment', what: 'What changed',
+    why: 'Why', benefit: 'Benefit', acceptance: 'How to verify', col_item: 'Item',
+    col_location: 'Location', col_before: 'Before', col_after: 'After',
+    col_blocking: 'Main-thread blocking', col_status: 'Evidence', col_reason: 'Reason for exclusion',
+    measured: 'measured', estimated: 'unverified', unverified_warning:
+      'This report contains unverified items. Anything marked "unverified" is a code-reading estimate, not confirmed by benchmark, and must not be used as acceptance evidence.',
+    no_items: 'None', generated: 'Generated', footer_note: 'review-rust-wasm',
+  },
+  ja: {
+    eyebrow: 'Rust / WebAssembly 改修検収レポート', summary: '改修項目一覧', details: '項目別詳細',
+    excluded: '検討したが除外', environment: '計測環境', what: '変更内容', why: '変更理由',
+    benefit: '効果', acceptance: '検収方法', col_item: '項目', col_location: '対象',
+    col_before: '改修前', col_after: '改修後', col_blocking: 'メインスレッド阻害', col_status: '根拠',
+    col_reason: '除外理由', measured: '実測', estimated: '未検証', unverified_warning:
+      '本レポートには未計測の項目が含まれます。「未検証」はコード読解による推定であり、ベンチマークで確認されていないため検収の根拠にはできません。',
+    no_items: 'なし', generated: '生成日時', footer_note: 'review-rust-wasm',
+  },
+};
+
+const data = window.__REPORT__ || {};
+const lang = data.lang || 'zh-TW';
+const L = { ...(BUILTIN[lang] || BUILTIN.en), ...(data.labels || {}) };
+
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nl2br = (s) => esc(s).replace(/\n/g, '<br>');
+
+const items = data.items || [];
+const excluded = data.excluded || [];
+const hasUnverified = items.some((i) => !i.verified);
+
+const badge = (ok) =>
+  `<span class="tag ${ok ? 'tag-measured' : 'tag-estimated'}">${ok ? L.measured : L.estimated}</span>`;
+
+function deltaCell(before, after) {
+  if (before == null || after == null) return '<td class="num">—</td>';
+  const faster = Number(after) < Number(before);
+  const ratio = Number(after) > 0 ? (Number(before) / Number(after)).toFixed(1) : null;
+  return `<td class="num"><span class="${faster ? 'delta-good' : 'delta-bad'}">${esc(after)}</span>${
+    ratio && faster ? ` <span style="color:var(--ink-faint)">(${ratio}×)</span>` : ''
+  }</td>`;
+}
+
+const summaryRows = items.length
+  ? items.map((it, n) => `
+      <tr>
+        <td>${n + 1}. ${esc(it.title)}</td>
+        <td class="num">${it.before != null ? esc(it.before) : '—'}</td>
+        ${deltaCell(it.before, it.after)}
+        <td class="num">${it.blockingBefore != null ? `${esc(it.blockingBefore)} → <span class="delta-good">${esc(it.blockingAfter)}</span>` : '—'}</td>
+        <td>${badge(it.verified)}</td>
+      </tr>`).join('')
+  : `<tr><td colspan="5" class="empty">${L.no_items}</td></tr>`;
+
+const detailBlocks = items.map((it, n) => `
+  <section class="item">
+    <div class="item-head"><span class="item-num">${n + 1}</span><h3>${esc(it.title)}</h3></div>
+    ${it.location ? `<div class="item-loc mono">${esc(it.location)}</div>` : ''}
+    ${it.what ? `<div class="field"><div class="field-label">${L.what}</div><div class="field-body">${nl2br(it.what)}</div></div>` : ''}
+    ${it.why ? `<div class="field"><div class="field-label">${L.why}</div><div class="field-body">${nl2br(it.why)}</div></div>` : ''}
+    ${it.benefit ? `<div class="field"><div class="field-label">${L.benefit} ${badge(it.verified)}</div><div class="field-body">${nl2br(it.benefit)}</div></div>` : ''}
+    ${(it.acceptance && it.acceptance.length) ? `
+      <div class="field">
+        <div class="field-label">${L.acceptance}</div>
+        <div class="field-body">
+          ${it.acceptanceCommands ? it.acceptanceCommands.map((c) => `<pre>${esc(c)}</pre>`).join('') : ''}
+          <ul class="checks">${it.acceptance.map((a) => `<li>${nl2br(a)}</li>`).join('')}</ul>
+        </div>
+      </div>` : ''}
+  </section>`).join('');
+
+const env = data.environment || {};
+const envRows = Object.entries(env)
+  .filter(([, v]) => v != null && v !== '')
+  .map(([k, v]) => `<tr><td style="width:32%;color:var(--ink-faint)">${esc(k)}</td><td class="mono">${esc(v)}</td></tr>`)
+  .join('');
+
+document.getElementById('root').innerHTML = `
+  <div class="cover">
+    <div class="eyebrow">${L.eyebrow}</div>
+    <h1>${esc(data.title || '')}</h1>
+    <div class="meta">
+      ${data.project ? `<span><b>${esc(data.project)}</b></span>` : ''}
+      <span>${L.generated}: ${esc(data.date || new Date().toISOString().slice(0, 10))}</span>
+      ${data.author ? `<span>${esc(data.author)}</span>` : ''}
+    </div>
+  </div>
+
+  ${data.intro ? `<p class="lede">${nl2br(data.intro)}</p>` : ''}
+  ${hasUnverified ? `<div class="callout"><b>⚠</b> ${L.unverified_warning}</div>` : ''}
+
+  <h2>${L.summary}</h2>
+  <table>
+    <thead><tr>
+      <th>${L.col_item}</th><th class="num">${L.col_before}</th><th class="num">${L.col_after}</th>
+      <th class="num">${L.col_blocking}</th><th>${L.col_status}</th>
+    </tr></thead>
+    <tbody>${summaryRows}</tbody>
+  </table>
+
+  <h2>${L.details}</h2>
+  ${detailBlocks || `<p class="empty">${L.no_items}</p>`}
+
+  ${excluded.length ? `
+    <h2>${L.excluded}</h2>
+    <table>
+      <thead><tr><th>${L.col_location}</th><th>${L.col_reason}</th></tr></thead>
+      <tbody>${excluded.map((e) => `<tr><td class="mono">${esc(e.location)}</td><td>${nl2br(e.reason)}</td></tr>`).join('')}</tbody>
+    </table>` : ''}
+
+  ${envRows ? `<h2>${L.environment}</h2><table><tbody>${envRows}</tbody></table>` : ''}
+
+  <footer><span>${esc(data.title || '')}</span><span>${L.footer_note}</span></footer>`;
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "stephen-skills",
+  "interface": {
+    "displayName": "Stephen's Skills"
+  },
+  "plugins": [
+    {
+      "name": "review-rust-wasm",
+      "description": "Audit a JS/TS frontend for CPU-bound hot paths worth porting to Rust + WebAssembly, port the ones you pick, run them in a Web Worker so the main thread stays responsive, benchmark before/after, and produce a PDF acceptance report.",
+      "source": {
+        "source": "local",
+        "path": "./plugins/review-rust-wasm"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "performance"
+    }
+  ]
+}

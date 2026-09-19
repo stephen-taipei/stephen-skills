@@ -1,0 +1,4 @@
+{
+  "category": "performance",
+  "tags": ["rust", "wasm", "performance", "web-worker"]
+}
