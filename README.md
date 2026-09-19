@@ -64,7 +64,6 @@ codex plugin marketplace add stephen-taipei/stephen-skills
 │       ├── .claude-plugin/plugin.json  # 單一真相來源
 │       ├── .codex-plugin/plugin.json
 │       ├── marketplace.meta.json       # 選填：category、tags
-│       ├── commands/                   # slash command（Claude Code）
 │       └── skills/<skill>/
 │           ├── SKILL.md                # 兩邊共用
 │           ├── references/             # 按需載入的細節文件
@@ -86,9 +85,13 @@ node scripts/sync-marketplaces.mjs --check    # 只檢查是否同步（CI 用�
 
 1. 建目錄：`plugins/<name>/skills/<name>/SKILL.md`
 2. 寫 `plugins/<name>/.claude-plugin/plugin.json` 與 `.codex-plugin/plugin.json`，`name` 必須與目錄名一致
-3. 需要 slash command 就加 `plugins/<name>/commands/<name>.md`
-4. 執行 `node scripts/sync-marketplaces.mjs`
-5. commit、push
+3. 執行 `node scripts/sync-marketplaces.mjs`
+4. commit、push
+
+**不要另外加 `commands/<name>.md`。** Claude Code 會把 `commands/` 的檔案也算成 skill，與
+`skills/<name>/SKILL.md` 同名時會重複註冊（`claude plugin details` 會顯示 `Skills (2) <name>, <name>`）。
+skill 本身預設就能用 `/<name>` 叫用，額外的 command 檔只是重複，而且 `commands/` 與
+`argument-hint` 都是 Claude Code 專屬、在 Codex 端不生效。
 
 ### SKILL.md frontmatter
 
